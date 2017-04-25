@@ -6,11 +6,11 @@
 ##
 ## Makes running duplicity for secure offsite backups easy.
 ##
-## Version: 20120327
+## Version: 20130209
 ## URL: chrispoole.com/project/horcrux
 ################################################################################
 
-# Copyright (C) 2012 Chris Poole <chris@chrispoole.com>
+# Copyright (C) 2013 Chris Poole <chris@chrispoole.com>
 # 
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -24,6 +24,12 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+if [[ "${OSTYPE%%.*}" = "darwin10" || "${OSTYPE%%.*}" = "darwin13" ]]; then
+    platform="mac"
+elif [[ "$OSTYPE" = "linux-gnu" ]]; then
+    platform="linux"
+fi
 
 horcrux_directory="$HOME/.horcrux"
 
@@ -59,8 +65,10 @@ file='-'
 dry_run=false
 time='now'
 
-# Allow more open files
-ulimit -n 2048
+if [[ "$platform" == "mac" ]]; then
+    # Allow more open files
+    ulimit -n 2048
+fi
 
 _show_help () {
     printf -- "Usage: horcrux [OPTIONS] OPERATION BACKUP_NAME [RESTORE PATH]\n\n"
@@ -210,7 +218,7 @@ fi
 ################################################################################
 
 if [[ "$operation" == "help" ]]; then
-        _show_help
+    _show_help
 fi
 
 zip_cmd=$(type -p pbzip2 || type -p bzip2)
